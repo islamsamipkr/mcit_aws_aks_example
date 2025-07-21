@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Updating kubeconfig...
+      - aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
+  build:
+    commands:
+      - echo Deploying backend and frontend to EKS...
+      - kubectl apply -f k8s/backend-deployment.yaml
+      - kubectl apply -f k8s/frontend-deployment.yaml

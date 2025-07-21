@@ -26,7 +26,7 @@
   <div class="result" id="result"></div>
 
   <script>
-    const backendUrl = 'http://<BACKEND-SERVICE-URL>'; // <-- Replace with backend LoadBalancer or Service DNS
+    const backendUrl = 'http://python-service.default.svc.cluster.local'; // <-- Guys, Replace with backend LoadBalancer or Service DNS
 
     async function getBalance() {
       const res = await fetch(`${backendUrl}/balance`);

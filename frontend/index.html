@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Bank App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 50px; background: #f7f7f7; }
+    h1 { color: #2e7d32; }
+    input { padding: 5px; margin-right: 5px; }
+    button { padding: 5px 10px; background: #2e7d32; color: white; border: none; cursor: pointer; }
+    button:hover { background: #1b5e20; }
+    .result { margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>🏦 Simple Bank App</h1>
+
+  <p><strong>Balance:</strong> <span id="balance">Loading...</span></p>
+
+  <div>
+    <input type="number" id="amount" placeholder="Enter amount" />
+    <button onclick="deposit()">Deposit</button>
+    <button onclick="withdraw()">Withdraw</button>
+  </div>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    const backendUrl = 'http://<BACKEND-SERVICE-URL>'; // <-- Replace with backend LoadBalancer or Service DNS
+
+    async function getBalance() {
+      const res = await fetch(`${backendUrl}/balance`);
+      const data = await res.json();
+      document.getElementById('balance').textContent = `$${data.balance.toFixed(2)}`;
+    }
+
+    async function deposit() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const res = await fetch(`${backendUrl}/deposit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      });
+      const data = await res.json();
+      document.getElementById('result').textContent = data.message || data.error;
+      getBalance();
+    }
+
+    async function withdraw() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const res = await fetch(`${backendUrl}/withdraw`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      });
+      const data = await res.json();
+      document.getElementById('result').textContent = data.message || data.error;
+      getBalance();
+    }
+
+    getBalance();
+  </script>
+
+</body>
+</html>

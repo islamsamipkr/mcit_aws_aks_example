@@ -1,0 +1,23 @@
+version: 0.2
+env:
+  variables:
+    IMAGE_TAG: "latest"
+phases:
+  pre_build:
+    commands:
+      - echo Logging into Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+  build:
+    commands:
+      - echo Building Docker images...
+      - docker build -t python-backend ./backend
+      - docker build -t bank-frontend ./frontend
+      - docker tag python-backend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/python-backend:latest
+      - docker tag bank-frontend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/bank-frontend:latest
+  post_build:
+    commands:
+      - echo Pushing Docker images...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/python-backend:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/bank-frontend:latest
+artifacts:
+  files: '**/*'
